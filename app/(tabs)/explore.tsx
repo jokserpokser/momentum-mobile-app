@@ -1,109 +1,92 @@
-import { StyleSheet, Image, Platform } from 'react-native';
-
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useState } from "react";
+import {
+  StyleSheet,
+  Image,
+  Platform,
+  View,
+  useColorScheme,
+  Text,
+  TextInput,
+  Pressable,
+  ScrollView,
+} from "react-native";
 
 export default function TabTwoScreen() {
+  const colorScheme = useColorScheme();
+
+  type TodoItem = {
+    addItemInput: string;
+    isDone: boolean;
+  }
+
+  const [todoList, setTodoList] = useState<TodoItem[]>([{addItemInput: "Task1", isDone: false}]);
+  const [addItemInput, setAddItemInput] = useState("");
+  const [isDone, setIsDone] = useState(false);
+
+  const handleAddItem = () => {
+    setTodoList([...todoList, {addItemInput, isDone}].reverse());
+    setAddItemInput("");
+  };
+
+  const handleTaskDone = (itemIndex:number) => {
+    const newArray = [...todoList];
+    newArray[itemIndex].isDone = !newArray[itemIndex].isDone;
+    setTodoList(newArray);
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
+    <View className="bg-white flex items-center h-screen w-screen">
+      <Text
+        className={`mt-14 text-4xl font-bold text-center w-screen text-blue-700`}
+      >
+        Todos
+      </Text>
+      <Text className="py-2 border-b border-blue-700 w-screen text-center">
+        Press Task to indicate Done
+      </Text>
+      {/* List Container */}
+      <ScrollView
+        style={{paddingHorizontal: 20, backgroundColor: "rgb(229, 231, 235)", width: "100%" }}
+      >
+        {todoList.map((item, index) => (
+          <View key={index} className="flex flex-row mt-3 w-full">
+            <Pressable
+              className={`${
+                item.isDone ? "bg-green-300" : "bg-white"
+              } flex flex-row items-center justify-between  shadow-lg rounded-tl-lg rounded-tr-lg rounded-br-lg w-full rounded-bl-lg`}
+              onPress={() => handleTaskDone(index)}
+            >
+              <Text className="text-lg py-3 px-6">{item.addItemInput}</Text>
+              <Pressable className="justify-center py-2 rounded-tr-lg rounded-br-lg ">
+                <Text className="text-center text-red-400 text-3xl font-bold"> X </Text>
+              </Pressable>
+            </Pressable>
+          </View>
+        ))}
+      </ScrollView>
+
+      {/* Input Container */}
+      <View className="bg-white border-t border-blue-700 absolute flex items-center py-3 px-6 bottom-14 shadow-lg w-screen rounded-md">
+        <Text className="text-blue-700 text-2xl text-center font-semibold">
+          Add Task
+        </Text>
+        <TextInput
+          className="border-b text-center w-11/12"
+          placeholder="-- Input Task Here --"
+          value={addItemInput}
+          onChangeText={(text) => {
+            setAddItemInput(text);
+          }}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user's current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+        <Pressable
+          className="bg-blue-700 w-3/5 mt-3 py-3 rounded-lg"
+          onPress={handleAddItem}
+        >
+          <Text className="text-white font-bold text-center">Add</Text>
+        </Pressable>
+      </View>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-});
+const styles = StyleSheet.create({});

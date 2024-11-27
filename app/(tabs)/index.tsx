@@ -32,7 +32,7 @@ export default function HomeScreen() {
   return (
     <View
       className={`h-screen flex flex-col justify-center ${
-        colorScheme === "light" ? "bg-gray-100" : "bg-neutral-900"
+        colorScheme === "light" ? "bg-gray-200" : "bg-neutral-900"
       }`}
     >
       <View className="absolute top-0">
@@ -41,7 +41,7 @@ export default function HomeScreen() {
             colorScheme === "light" ? "text-black" : "text-white"
           }`}
         >
-          Momentum App
+          Main Goal
         </Text>
         {/* Name Greeting Container */}
         {name && (
