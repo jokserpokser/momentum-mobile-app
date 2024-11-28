@@ -34,6 +34,12 @@ export default function TabTwoScreen() {
     setTodoList(newArray);
   }
 
+  const handleTaskDelete = (itemIndex:number) => {
+    const newArray = [...todoList];
+    newArray.splice(itemIndex, 1);
+    setTodoList(newArray);
+  }
+
   return (
     <View className="bg-white flex items-center h-screen w-screen">
       <Text
@@ -57,7 +63,7 @@ export default function TabTwoScreen() {
               onPress={() => handleTaskDone(index)}
             >
               <Text className="text-lg py-3 px-6">{item.addItemInput}</Text>
-              <Pressable className="justify-center py-2 rounded-tr-lg rounded-br-lg ">
+              <Pressable className="justify-center py-2 rounded-tr-lg rounded-br-lg" onPress={() => {handleTaskDelete(index)}}>
                 <Text className="text-center text-red-400 text-3xl font-bold"> X </Text>
               </Pressable>
             </Pressable>
