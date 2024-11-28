@@ -9,6 +9,7 @@ import {
   TextInput,
   Pressable,
   ScrollView,
+  Animated,
 } from "react-native";
 
 export default function TabTwoScreen() {
@@ -17,75 +18,164 @@ export default function TabTwoScreen() {
   type TodoItem = {
     addItemInput: string;
     isDone: boolean;
-  }
+    fadeAnimListItem: Animated.Value;
+  };
 
-  const [todoList, setTodoList] = useState<TodoItem[]>([{addItemInput: "Task1", isDone: false}]);
+  const [todoList, setTodoList] = useState<TodoItem[]>([
+    {
+      addItemInput: "Task1",
+      isDone: false,
+      fadeAnimListItem: new Animated.Value(1),
+    },
+  ]);
   const [addItemInput, setAddItemInput] = useState("");
   const [isDone, setIsDone] = useState(false);
+  const [buttonStatus, setButtonStatus] = useState(false);
+
+  const dynamicTextColor =
+    colorScheme === "light" ? "text-black" : "text-white";
+
+  const dynamicBackgroundColor =
+    colorScheme === "light" ? "bg-white" : "bg-neutral-800";
+
+  //Animation Function
+  const fadeIn = (animatedValue: Animated.Value) => {
+    return Animated.timing(animatedValue, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    });
+  };
+
+  const fadeOut = (animatedValue: Animated.Value) => {
+    return Animated.timing(animatedValue, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    });
+  };
 
   const handleAddItem = () => {
-    setTodoList([...todoList, {addItemInput, isDone}].reverse());
+    if (!addItemInput.trim()) {
+      alert("Task cannot be empty!");
+      return;
+    }
+
+    setButtonStatus(true);
+    // Animation initial opacity value
+    const fadeAnimListItem = new Animated.Value(0);
+    fadeIn(fadeAnimListItem).start(() => setButtonStatus(false));
+    setTodoList([{ addItemInput, isDone, fadeAnimListItem }, ...todoList]);
     setAddItemInput("");
   };
 
-  const handleTaskDone = (itemIndex:number) => {
+  const handleTaskDone = (itemIndex: number) => {
     const newArray = [...todoList];
     newArray[itemIndex].isDone = !newArray[itemIndex].isDone;
     setTodoList(newArray);
-  }
+  };
 
-  const handleTaskDelete = (itemIndex:number) => {
+  const handleTaskDelete = (itemIndex: number) => {
     const newArray = [...todoList];
     newArray.splice(itemIndex, 1);
     setTodoList(newArray);
-  }
+  };
 
   return (
-    <View className="bg-white flex items-center h-screen w-screen">
+    <View
+      className={`${dynamicBackgroundColor} flex items-center h-screen w-screen`}
+    >
       <Text
-        className={`mt-14 text-4xl font-bold text-center w-screen text-blue-700`}
+        className={`mt-14 text-4xl font-bold text-center w-screen text-blue-500`}
       >
         Todos
       </Text>
-      <Text className="py-2 border-b border-blue-700 w-screen text-center">
+      <Text
+        className={`${dynamicTextColor} py-2 border-b border-blue-500 w-screen text-center`}
+      >
         Press Task to indicate Done
       </Text>
       {/* List Container */}
       <ScrollView
-        style={{paddingHorizontal: 20, backgroundColor: "rgb(229, 231, 235)", width: "100%" }}
+        style={{
+          paddingHorizontal: 30,
+          paddingVertical: 15,
+          backgroundColor:
+            colorScheme === "light" ? "rgb(229, 231, 235)" : "rgb(10 10 10)",
+          width: "100%",
+        }}
+        contentContainerStyle={
+          todoList.length === 0 && {
+            justifyContent: "center",
+            alignItems: "center",
+            flex: 1,
+          }
+        }
       >
-        {todoList.map((item, index) => (
-          <View key={index} className="flex flex-row mt-3 w-full">
-            <Pressable
-              className={`${
-                item.isDone ? "bg-green-300" : "bg-white"
-              } flex flex-row items-center justify-between  shadow-lg rounded-tl-lg rounded-tr-lg rounded-br-lg w-full rounded-bl-lg`}
-              onPress={() => handleTaskDone(index)}
+        {todoList.length === 0 && (
+          <Text className="text-neutral-500 text-2xl text-center">
+            No Tasks
+          </Text>
+        )}
+        {todoList &&
+          todoList.map((item, index) => (
+            <Animated.View
+              key={index}
+              style={{ opacity: item.fadeAnimListItem }}
+              className="flex flex-row my-2 w-full"
             >
-              <Text className="text-lg py-3 px-6">{item.addItemInput}</Text>
-              <Pressable className="justify-center py-2 rounded-tr-lg rounded-br-lg" onPress={() => {handleTaskDelete(index)}}>
-                <Text className="text-center text-red-400 text-3xl font-bold"> X </Text>
+              <Pressable
+                className={`${
+                  item.isDone ? "bg-green-300" : dynamicBackgroundColor
+                } flex flex-row items-center justify-between  shadow-lg rounded-tl-lg rounded-tr-lg rounded-br-lg w-full rounded-bl-lg`}
+                onPress={() => handleTaskDone(index)}
+              >
+                <Text
+                  className={`text-xl py-3 px-6 ${
+                    item.isDone ? "line-through text-green-600" : ""
+                  } ${dynamicTextColor} `}
+                >
+                  {item.addItemInput}
+                </Text>
+                <Pressable
+                  className="justify-center py-2 pr-3 rounded-tr-lg rounded-br-lg"
+                  onPress={() => {
+                    handleTaskDelete(index);
+                  }}
+                >
+                  <Text className="text-center text-red-400 text-3xl font-bold">
+                    {" "}
+                    X{" "}
+                  </Text>
+                </Pressable>
               </Pressable>
-            </Pressable>
-          </View>
-        ))}
+            </Animated.View>
+          ))}
       </ScrollView>
 
       {/* Input Container */}
-      <View className="bg-white border-t border-blue-700 absolute flex items-center py-3 px-6 bottom-14 shadow-lg w-screen rounded-md">
-        <Text className="text-blue-700 text-2xl text-center font-semibold">
+      <View
+        className={`${dynamicBackgroundColor} border-t border-blue-500 flex items-center py-3 px-6 pb-32 shadow-lg w-screen rounded-md`}
+      >
+        <Text className="text-blue-500 text-2xl text-center font-semibold">
           Add Task
         </Text>
         <TextInput
-          className="border-b text-center w-11/12"
+          className={`${
+            colorScheme === "light"
+              ? "border-black text-black"
+              : "border-blue-500 text-white"
+          } border-b text-center w-11/12`}
           placeholder="-- Input Task Here --"
+          placeholderTextColor={"gray"}
           value={addItemInput}
           onChangeText={(text) => {
             setAddItemInput(text);
           }}
         />
         <Pressable
-          className="bg-blue-700 w-3/5 mt-3 py-3 rounded-lg"
+          className="bg-blue-500 w-3/5 mt-3 py-3 rounded-lg"
+          disabled={buttonStatus}
           onPress={handleAddItem}
         >
           <Text className="text-white font-bold text-center">Add</Text>

@@ -33,18 +33,21 @@ export default function HomeScreen() {
   const [fadeAnimQuestionMainTask] = useState(new Animated.Value(0));
 
   // Animation Functions
-  const fadeIn = (animatedValue: any) =>
-    Animated.timing(animatedValue, {
+  const fadeIn = (animatedValue: Animated.Value) => {
+    return Animated.timing(animatedValue, {
       toValue: 1,
       duration: 500,
       useNativeDriver: true,
     });
-  const fadeOut = (animatedValue: any) =>
-    Animated.timing(animatedValue, {
+  };
+
+  const fadeOut = (animatedValue: Animated.Value) => {
+    return Animated.timing(animatedValue, {
       toValue: 0,
       duration: 500,
       useNativeDriver: true,
     });
+  };
 
   const handleSubmitName = () => {
     if (!inputName.trim()) {
@@ -112,9 +115,7 @@ export default function HomeScreen() {
     >
       <View className="absolute top-0">
         <Text
-          className={`mt-14 text-4xl font-bold text-center w-screen text-blue-700 ${
-            colorScheme === "light" ? "text-black" : "text-white"
-          }`}
+          className={`mt-14 text-4xl font-bold text-center w-screen text-blue-500`}
         >
           Momentum App
         </Text>
@@ -122,13 +123,25 @@ export default function HomeScreen() {
         {/* Name Greeting Container */}
         <Animated.View
           style={{ opacity: fadeAnimGreeting }}
-          className={`flex-row justify-center items-center text-2xl text-center w-screen z-10 mt-3 ${
-            colorScheme === "light" ? "text-black" : "text-white"
-          }`}
+          className={`flex-row justify-center items-center text-2xl text-center w-screen z-10 mt-3`}
         >
-          <Text className="text-2xl">Hello, </Text>
+          <Text
+            className={`text-2xl ${
+              colorScheme === "light" ? "text-black" : "text-white"
+            }`}
+          >
+            Hello,{" "}
+          </Text>
           <Pressable className="mt-1" onPress={handleEditName}>
-            <Text className="text-2xl border-b">{name}!</Text>
+            <Text
+              className={`text-2xl border-b ${
+                colorScheme === "light"
+                  ? "text-black border-black"
+                  : "text-white border-white"
+              }`}
+            >
+              {name}!
+            </Text>
           </Pressable>
         </Animated.View>
 
@@ -139,9 +152,15 @@ export default function HomeScreen() {
             showMainTask ? "flex" : "hidden"
           } items-center absolute w-screen h-screen justify-center z-0`}
         >
-          <Text className="text-center">Your Main Task for Today</Text>
+          <Text
+            className={`text-center ${
+              colorScheme === "light" ? "text-black" : "text-white"
+            }`}
+          >
+            Your Main Task for Today
+          </Text>
           <Pressable
-            className="bg-blue-700 mt-3 py-4 w-5/6 rounded-lg"
+            className="bg-blue-500 mt-3 py-4 w-5/6 rounded-lg"
             onPress={() => {
               fadeOut(fadeAnimMainTask).start(() => {
                 setMainTask("");
@@ -160,7 +179,7 @@ export default function HomeScreen() {
       {/* Question Name Container */}
       <Animated.View
         style={{ opacity: fadeAnimQuestionName }}
-        className={`flex items-center justify-center  mx-10 rounded-lg p-3 h-52 shadow-lg ${
+        className={`items-center justify-center  mx-10 rounded-lg p-3 h-52 shadow-lg ${
           colorScheme === "light" ? "bg-white" : "bg-neutral-800"
         } ${showQuestionNameContainer ? "flex" : "hidden"}`}
       >
@@ -175,7 +194,7 @@ export default function HomeScreen() {
           className={`border-b w-5/6 text-center text-md  mt-10 ${
             colorScheme === "light"
               ? "border-black text-black"
-              : "border-white text-white"
+              : "border-blue-500 text-white"
           }`}
           placeholder="Enter your First Name"
           placeholderTextColor={colorScheme === "light" ? "#b0b0b0" : "#808080"}
@@ -185,7 +204,7 @@ export default function HomeScreen() {
           }}
         />
         <Pressable
-          className="bg-blue-700 mt-5 py-2 rounded-md"
+          className="bg-blue-500 mt-5 py-2 rounded-md"
           onPress={handleSubmitName}
         >
           <Text
@@ -215,7 +234,7 @@ export default function HomeScreen() {
           className={`border-b w-5/6 text-center text-md  mt-10 ${
             colorScheme === "light"
               ? "border-black text-black"
-              : "border-white text-white"
+              : "border-blue-500 text-white"
           }`}
           placeholder="Enter Main Task"
           placeholderTextColor={colorScheme === "light" ? "#b0b0b0" : "#808080"}
@@ -225,7 +244,7 @@ export default function HomeScreen() {
           }}
         />
         <Pressable
-          className="bg-blue-700 mt-5 py-2 rounded-md"
+          className="bg-blue-500 mt-5 py-2 rounded-md"
           onPress={handleSubmitMainTask}
         >
           <Text
