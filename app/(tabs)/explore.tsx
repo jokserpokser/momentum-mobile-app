@@ -145,7 +145,7 @@ export default function TabTwoScreen() {
             >
               <Pressable
                 className={`${
-                  item.isDone ? "bg-green-400" : dynamicBackgroundColor
+                  item.isDone ? "bg-green-400 opacity-15" : dynamicBackgroundColor
                 } flex flex-row items-center justify-between  shadow-lg rounded-tl-lg rounded-tr-lg rounded-br-lg w-full rounded-bl-lg`}
                 onPress={() => handleTaskDone(index)}
               >
