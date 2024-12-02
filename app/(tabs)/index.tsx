@@ -9,6 +9,8 @@ import {
   Animated,
 } from "react-native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
 
@@ -106,6 +108,69 @@ export default function HomeScreen() {
       fadeAnimQuestionMainTask.stopAnimation();
     };
   }, []);
+
+  //Get Data
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const storedName = await AsyncStorage.getItem("name");
+        const storedMainTask = await AsyncStorage.getItem("mainTask");
+        if (storedName !== null) {
+          setName(storedName);
+          setInputName(storedName);
+          fadeIn(fadeAnimGreeting).start();
+          console.log("Stored Name set");
+          setShowQuestionNameContainer(false);
+        } else {
+          console.log("Name not found");
+          setShowQuestionNameContainer(true);
+        }
+
+        if (storedMainTask !== null) {
+          setMainTask(storedMainTask);
+          setInputMainTask(storedMainTask);
+          console.log("Stored Main Task set");
+          setShowQuestionMainTaskContainer(false);
+        } else {
+          console.log("Main Task not found");
+          if (!showQuestionNameContainer) {
+            setShowQuestionMainTaskContainer(true);
+            fadeIn(fadeAnimQuestionMainTask).start();
+          }
+        }
+
+        if (storedName && storedMainTask) {
+          setShowMainTask(true);
+          fadeIn(fadeAnimMainTask).start();
+        }
+      } catch (error) {
+        console.error("Error Retrieving Data:", error);
+      }
+    };
+
+    getData();
+  }, []);
+
+  //Save Data
+  useEffect(() => {
+    const saveData = async () => {
+      try {
+        if (name) {
+          await AsyncStorage.setItem("name", name);
+          console.log("Name Saved");
+        }
+
+        if (mainTask) {
+          await AsyncStorage.setItem("mainTask", mainTask);
+          console.log("Main Task Saved");
+        }
+      } catch (error) {
+        console.error("Error Saving Data", error);
+      }
+    };
+
+    saveData();
+  }, [name, mainTask]);
 
   return (
     <View
