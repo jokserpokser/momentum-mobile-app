@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   StyleSheet,
   Image,
@@ -12,6 +12,8 @@ import {
   Animated,
 } from "react-native";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 export default function TabTwoScreen() {
   const colorScheme = useColorScheme();
 
@@ -21,13 +23,8 @@ export default function TabTwoScreen() {
     fadeAnimListItem: Animated.Value;
   };
 
-  const [todoList, setTodoList] = useState<TodoItem[]>([
-    {
-      addItemInput: "Task1",
-      isDone: false,
-      fadeAnimListItem: new Animated.Value(1),
-    },
-  ]);
+  const [todoList, setTodoList] = useState<TodoItem[]>([]);
+
   const [addItemInput, setAddItemInput] = useState("");
   const [isDone, setIsDone] = useState(false);
   const [buttonStatus, setButtonStatus] = useState(false);
@@ -42,14 +39,6 @@ export default function TabTwoScreen() {
   const fadeIn = (animatedValue: Animated.Value) => {
     return Animated.timing(animatedValue, {
       toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    });
-  };
-
-  const fadeOut = (animatedValue: Animated.Value) => {
-    return Animated.timing(animatedValue, {
-      toValue: 0,
       duration: 500,
       useNativeDriver: true,
     });
@@ -80,6 +69,36 @@ export default function TabTwoScreen() {
     newArray.splice(itemIndex, 1);
     setTodoList(newArray);
   };
+
+  //Get Tasks
+  useEffect(() => {
+    const getTasks = async () => {
+      try {
+        const storedTasks = await AsyncStorage.getItem("tasks");
+        if (storedTasks !== null) {
+          const parsedTasks = JSON.parse(storedTasks);
+          parsedTasks[0].fadeAnimListItem = new Animated.Value(1);
+          setTodoList(parsedTasks);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    getTasks();
+  }, []);
+
+  //Save Tasks
+  useEffect(() => {
+    const saveTasks = async () => {
+      try {
+        await AsyncStorage.setItem("tasks", JSON.stringify(todoList));
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    saveTasks();
+  }, [todoList]);
 
   return (
     <View
@@ -126,13 +145,13 @@ export default function TabTwoScreen() {
             >
               <Pressable
                 className={`${
-                  item.isDone ? "bg-green-300" : dynamicBackgroundColor
+                  item.isDone ? "bg-green-400" : dynamicBackgroundColor
                 } flex flex-row items-center justify-between  shadow-lg rounded-tl-lg rounded-tr-lg rounded-br-lg w-full rounded-bl-lg`}
                 onPress={() => handleTaskDone(index)}
               >
                 <Text
                   className={`text-xl py-3 px-6 ${
-                    item.isDone ? "line-through text-green-600" : ""
+                    item.isDone ? "line-through text-green-700" : ""
                   } ${dynamicTextColor} `}
                 >
                   {item.addItemInput}

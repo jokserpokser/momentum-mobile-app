@@ -119,20 +119,16 @@ export default function HomeScreen() {
           setName(storedName);
           setInputName(storedName);
           fadeIn(fadeAnimGreeting).start();
-          console.log("Stored Name set");
           setShowQuestionNameContainer(false);
         } else {
-          console.log("Name not found");
           setShowQuestionNameContainer(true);
         }
 
         if (storedMainTask !== null) {
           setMainTask(storedMainTask);
           setInputMainTask(storedMainTask);
-          console.log("Stored Main Task set");
           setShowQuestionMainTaskContainer(false);
         } else {
-          console.log("Main Task not found");
           if (!showQuestionNameContainer) {
             setShowQuestionMainTaskContainer(true);
             fadeIn(fadeAnimQuestionMainTask).start();
@@ -157,12 +153,10 @@ export default function HomeScreen() {
       try {
         if (name) {
           await AsyncStorage.setItem("name", name);
-          console.log("Name Saved");
         }
 
         if (mainTask) {
           await AsyncStorage.setItem("mainTask", mainTask);
-          console.log("Main Task Saved");
         }
       } catch (error) {
         console.error("Error Saving Data", error);
